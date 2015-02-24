@@ -17,13 +17,17 @@ public class Game {
     public static final byte STATUS_INTERRUPTED = 3;
 
     private byte[][] field;
+
     private byte currentPlayer;
+    private byte gameStatus;
 
     public byte getGameStatus() {
         return gameStatus;
     }
 
-    private byte gameStatus;
+    public byte getCurrentPlayer() {
+        return currentPlayer;
+    }
 
     Game() {
         field = new byte[FIELD_SIZE][FIELD_SIZE];
@@ -34,10 +38,10 @@ public class Game {
         gameStatus = STATUS_UNDEFINED;
     }
 
-    public void nextStep(String step) {
+    public void nextMove(String move) {
         //TODO: validate step string
-        int row = 'a' - step.charAt(0);
-        int col = '0' - step.charAt(1);
+        int row = move.charAt(0) - 'a';
+        int col = move.charAt(1) - '1';
 
         setFieldCell(row, col);
         checkStatus(row, col);
@@ -63,10 +67,8 @@ public class Game {
             return false;
         }
 
-        for (int i=row; i<FIELD_SIZE && isWin; i+=incRow) {
-            for (int j=col; j<FIELD_SIZE && isWin; j+=incCol) {
-                isWin = field[i][j]==field[row][col];
-            }
+        for (int i=row, j=col; i<FIELD_SIZE && j<FIELD_SIZE && isWin; i+=incRow, j+=incCol) {
+            isWin = field[i][j]==field[row][col];
         }
 
         return isWin;
@@ -88,7 +90,7 @@ public class Game {
         if (checkSequence(row, 0, 0, 1) || // horizontal
                 checkSequence(0, col, 1, 0) || // vertical
                 checkSequence(0, 0, 1, 1) || // diagonal 1
-                checkSequence(0, FIELD_SIZE, 1, -1)) // diagonal 2
+                checkSequence(0, FIELD_SIZE-1, 1, -1)) // diagonal 2
         {
             gameStatus = (currentPlayer == PLAYER_0) ? STATUS_WIN_0 : STATUS_WIN_X;
         } else if (checkDraw()) {
@@ -101,12 +103,12 @@ public class Game {
 
         System.out.print(emptyTemplate.replace("t", " "));
         for (int i=0; i<FIELD_SIZE; i++) {
-            System.out.print(emptyTemplate.replace("t", "" + (char)('a'+i)));
+            System.out.print(emptyTemplate.replace("t", "" + (char)('1'+i)));
         }
         System.out.println();
 
         for (int i=0; i<FIELD_SIZE; i++) {
-            System.out.print(emptyTemplate.replace("t", "" + (char)('1' + i)));
+            System.out.print(emptyTemplate.replace("t", "" + (char)('a' + i)));
             for (int j=0; j<FIELD_SIZE; j++) {
                 switch (field[i][j]) {
                     case CELL_EMPTY:

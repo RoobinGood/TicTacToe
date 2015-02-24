@@ -26,17 +26,46 @@ public class CLI {
     }
 
     private void incorrectCommandWarning() {
-        System.out.println("Incorrect command, try again.");
+        System.out.println("Incorrect command.\n" +
+                "Enter 'h' to help.");
     }
 
     private void newGame() {
-        System.out.println("Game start");
+        System.out.println("Game is started.\n" +
+                "First move belongs to player X");
         Game game = new Game();
 
-        game.writeField();
-        /*while (game.getGameStatus() == game.STATUS_UNDEFINED) {
+        Scanner scanner = new Scanner(System.in);
+        String move;
+        while (game.getGameStatus() == game.STATUS_UNDEFINED) {
+            if (game.getCurrentPlayer()==game.PLAYER_0) {
+                System.out.print("0");
+            } else {
+                System.out.print("X");
+            }
             prompt();
-        } */
+            move = scanner.nextLine();
+            game.nextMove(move);
+            game.writeField();
+        }
+
+        switch (game.getGameStatus()) {
+            case Game.STATUS_WIN_0:
+                System.out.println("PLAYER 0 WIN!");
+                break;
+
+            case Game.STATUS_WIN_X:
+                System.out.println("PLAYER X WIN!");
+                break;
+
+            case Game.STATUS_DRAW:
+                System.out.println("DRAW");
+                break;
+
+            case Game.STATUS_INTERRUPTED:
+                System.out.println("GAME INTERRUPTED");
+                break;
+        }
     }
 
     public void run() {
